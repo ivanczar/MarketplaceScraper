@@ -35,6 +35,8 @@ driver.find_element(By.LINK_TEXT, "Market").click()
 sleep(5)
 
 # get all listings
+# When scraping, save title of first listing to a txt file. During following scrape,
+# if previously saved title matches first scrape, break (i.e the saved title and following listings have already been processed)
 allListings = driver.find_elements(By.CLASS_NAME, "market-item")
 for listing in allListings:
     title = listing.find_element(
@@ -47,8 +49,9 @@ for listing in allListings:
         if item in title.lower():
             match += f"\t-{title}\n"
             matchCount += 1
-            
-# send text
+
+# send text - USING TWILIO SANDBOX - EXPIRES AFTER 3 DAYS (MUST CREATE ANOTHER ONE)
+# Only create message object if matchCount != 0 (prevent empty messages)
 message = client.messages.create(
     from_='whatsapp:' + os.getenv("FROM_PHONE"),
     body=(
